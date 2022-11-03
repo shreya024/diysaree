@@ -1,0 +1,7 @@
+.homebg {
+  background: url("../../../public/images/home_bg.png");
+
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
