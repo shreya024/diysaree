@@ -1,0 +1,15 @@
+.outer {
+  text-align: center;
+  margin-top: 2%;
+}
+.card_bg {
+  background: #e3e3e3;
+  border-radius: 4% !important;
+  padding: 2%;
+  margin: 5%;
+}
+
+.image_css {
+  padding: 15%;
+  background: white;
+}

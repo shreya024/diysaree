@@ -1,0 +1,9 @@
+.outer {
+  background-color: white;
+  margin-top: 5%;
+  padding: 5%;
+}
+
+.rounded {
+  border-radius: 4%;
+}

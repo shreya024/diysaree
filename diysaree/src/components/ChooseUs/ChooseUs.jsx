@@ -3,13 +3,19 @@ import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/Button";
+import Demo_Video from "./demo_video.mp4";
+import ChooseCSS from "./ChooseUs.module.css";
 
 const ChooseUs = () => {
   return (
-    <div>
+    <div className={ChooseCSS.outer}>
       <Container>
         <Row>
-          <Col></Col>
+          <Col>
+            <video width={"100%"} controls className={ChooseCSS.rounded}>
+              <source src={Demo_Video} type="video/mp4" />
+            </video>
+          </Col>
           <Col>
             <h2>Why Choose Us?</h2>
             <p>
