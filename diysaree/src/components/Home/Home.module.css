@@ -1,7 +1,17 @@
 .homebg {
-  background: url("../../../public/images/home_bg.png");
+  background-image: url("../../../public/images/home_bg.png");
 
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  color: white;
+}
+
+.cardtext {
+  margin-top: 17%;
+  margin-bottom: 19%;
+}
+
+.rounded_border {
+  border-radius: 4%;
 }
