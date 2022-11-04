@@ -1,7 +1,17 @@
 .outerbg {
   background-color: black;
+  text-align: center;
+  padding: 5%;
+  color: white;
 }
 
 .overlay_padding {
-  padding-top: 5%;
+}
+
+.card_css {
+  border-radius: 15%;
+  margin-top: 5%;
+  margin-left: 5%;
+  margin-right: 5%;
+  background-color: black;
 }
