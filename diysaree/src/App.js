@@ -5,10 +5,12 @@ import Collection from "./components/Collection/Collection ";
 import Chooseus from "./components/ChooseUs/ChooseUs";
 import Projects from "./components/Projects/Projects";
 import Footer from "./components/Footer/Footer";
+import NavBar from "./components/Navbar/NavBar";
 
 function App() {
   return (
     <>
+      <NavBar />
       <Home />
       <DIYDesignEditor />
       <Gallery />
