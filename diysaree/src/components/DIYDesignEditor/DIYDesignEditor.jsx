@@ -6,6 +6,8 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import { Stage, Image, Layer } from "react-konva";
 import useImage from "use-image";
+import block1 from "./block1.png";
+import block2 from "./block2.png";
 
 const URLImage = ({ image }) => {
   const [img] = useImage(image.src);
@@ -26,28 +28,41 @@ const DIYDesignEditor = () => {
   const stageRef = useRef();
   const [images, setImages] = useState([]);
   return (
-    <div className={DIYCSS.outer}>
-      Try to trag and image into the stage:
-      <br />
-      <img
-        alt="lion"
-        src="https://konvajs.org/assets/lion.png"
-        draggable="true"
-        onDragStart={(e) => {
-          dragUrl.current = e.target.src;
-        }}
-      />
+    <Container className={DIYCSS.outer}>
       <Row>
-        <Col>a</Col>
-        <Col>b</Col>
-        <Col>c</Col>
-        <Col>d</Col>
-        <Button variant="dark">Save Design</Button>
+        <Col>
+          <img
+            alt="block1"
+            src={block1}
+            draggable="true"
+            onDragStart={(e) => {
+              dragUrl.current = e.target.src;
+            }}
+          />{" "}
+        </Col>
+        <Col>
+          <img
+            alt="block2"
+            src={block2}
+            draggable="true"
+            onDragStart={(e) => {
+              dragUrl.current = e.target.src;
+            }}
+          />{" "}
+        </Col>
+        <Col>
+          <Button variant="dark">Save Design</Button>
+        </Col>
       </Row>
       <Row>
-        <Button variant="dark">Add to Wishlist</Button>
-        <Button variant="dark">Order Now</Button>
+        <Col>
+          <Button variant="dark">Add to Wishlist</Button>
+        </Col>
+        <Col>
+          <Button variant="dark">Order Now</Button>
+        </Col>
       </Row>
+
       <Container
         className={DIYCSS.inner}
         onDrop={(e) => {
@@ -69,7 +84,6 @@ const DIYDesignEditor = () => {
         <Stage
           width={window.innerWidth}
           height={window.innerHeight}
-          style={{ border: "1px solid grey" }}
           ref={stageRef}
         >
           <Layer>
@@ -79,7 +93,7 @@ const DIYDesignEditor = () => {
           </Layer>
         </Stage>
       </Container>
-    </div>
+    </Container>
   );
 };
 

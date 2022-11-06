@@ -19,7 +19,7 @@ const Projects = () => {
         </Row>
         <Row>
           <Col>
-            <Card className="bg-dark text-white">
+            <Card className={ProjectCSS.card_css}>
               <Card.Img src={demodesign} alt="Card image" />
               <Card.ImgOverlay>
                 <Card.Title>Card title</Card.Title>
@@ -27,7 +27,7 @@ const Projects = () => {
             </Card>
           </Col>
           <Col>
-            <Card className="bg-dark text-white">
+            <Card className={ProjectCSS.card_css}>
               <Card.Img src={demodesign} alt="Card image" />
               <Card.ImgOverlay>
                 <Card.Title>Card title</Card.Title>
@@ -35,7 +35,7 @@ const Projects = () => {
             </Card>
           </Col>
           <Col>
-            <Card className="bg-dark text-white">
+            <Card className={ProjectCSS.card_css}>
               <Card.Img src={demodesign} alt="Card image" />
               <Card.ImgOverlay>
                 <Card.Title>Card title</Card.Title>
@@ -45,7 +45,7 @@ const Projects = () => {
         </Row>
         <Row>
           <Col>
-            <Card className="bg-dark text-white">
+            <Card className={ProjectCSS.card_css}>
               <Card.Img src={demodesign} alt="Card image" />
               <Card.ImgOverlay>
                 <Card.Title>Card title</Card.Title>
@@ -53,7 +53,7 @@ const Projects = () => {
             </Card>
           </Col>
           <Col>
-            <Card className="bg-dark text-white">
+            <Card className={ProjectCSS.card_css}>
               <Card.Img src={demodesign} alt="Card image" />
               <Card.ImgOverlay>
                 <Card.Title>Card title</Card.Title>
@@ -61,7 +61,7 @@ const Projects = () => {
             </Card>
           </Col>
           <Col>
-            <Card className="bg-dark text-white">
+            <Card className={ProjectCSS.card_css}>
               <Card.Img src={demodesign} alt="Card image" />
               <Card.ImgOverlay>
                 <Card.Title>Card title</Card.Title>
