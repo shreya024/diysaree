@@ -8,6 +8,7 @@ import { Stage, Image, Layer } from "react-konva";
 import useImage from "use-image";
 import block1 from "./block1.png";
 import block2 from "./block2.png";
+import SketchExample from "./Sketch";
 
 const URLImage = ({ image }) => {
   const [img] = useImage(image.src);
@@ -49,6 +50,9 @@ const DIYDesignEditor = () => {
               dragUrl.current = e.target.src;
             }}
           />{" "}
+        </Col>
+        <Col>
+          <SketchExample />
         </Col>
         <Col>
           <Button variant="dark">Save Design</Button>
