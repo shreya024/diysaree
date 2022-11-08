@@ -6,11 +6,11 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import { Stage, Image, Layer } from "react-konva";
 import useImage from "use-image";
-import block1 from "./block1.png";
+import block1 from "./icon1.svg";
 import block2 from "./block2.png";
-import { ReactComponent as MyLogo } from "./icon2.svg";
 import reactCSS from "reactcss";
 import { SketchPicker } from "react-color";
+import { ReactComponent as Logo } from "./icon1.svg";
 
 const URLImage = ({ image }) => {
   const [img] = useImage(image.src);
@@ -80,6 +80,7 @@ const DIYDesignEditor = () => {
       },
     },
   });
+
   return (
     <Container className={DIYCSS.outer}>
       <Row>
@@ -93,17 +94,17 @@ const DIYDesignEditor = () => {
             }}
           />{" "}
         </Col>
+
         <Col>
-          <img
-            alt="block2"
-            src={block2}
+          <Logo
+            fill={`rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`}
             draggable="true"
             onDragStart={(e) => {
+              console.log("Dragging");
               dragUrl.current = e.target.src;
             }}
-          />{" "}
+          />
         </Col>
-
         <Col>
           <div>
             <div style={styles.swatch} onClick={handleClick}>
