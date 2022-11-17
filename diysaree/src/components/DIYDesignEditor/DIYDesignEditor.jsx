@@ -7,9 +7,9 @@ import Button from "react-bootstrap/Button";
 import { Stage, Image, Layer } from "react-konva";
 import useImage from "use-image";
 import block1 from "./icon1.svg";
-import MenuIcon from "./MenuIcon";
 import reactCSS from "reactcss";
 import { SketchPicker } from "react-color";
+import ExportAsImg from "./ExportAsImg";
 
 const URLImage = ({ image }) => {
   const [img] = useImage(image.src);
@@ -28,6 +28,7 @@ const URLImage = ({ image }) => {
 const DIYDesignEditor = () => {
   const dragUrl = useRef();
   const stageRef = useRef();
+  const exportRef = useRef();
   const [images, setImages] = useState([]);
 
   const [colorPickerstate, setColorPickerState] = useState(false);
@@ -109,7 +110,12 @@ const DIYDesignEditor = () => {
           />{" "}
         </Col>
         <Col>
-          <Button variant="dark">Save Design</Button>
+          <Button
+            variant="dark"
+            onClick={() => ExportAsImg(exportRef.current, "design")}
+          >
+            Save Design
+          </Button>
         </Col>
       </Row>
       <Row>
@@ -122,6 +128,7 @@ const DIYDesignEditor = () => {
       </Row>
 
       <Container
+        ref={exportRef}
         className={DIYCSS.inner}
         style={{
           backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`,
