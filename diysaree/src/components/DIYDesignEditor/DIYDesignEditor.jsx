@@ -7,10 +7,9 @@ import Button from "react-bootstrap/Button";
 import { Stage, Image, Layer } from "react-konva";
 import useImage from "use-image";
 import block1 from "./icon1.svg";
-import block2 from "./block2.png";
+import MenuIcon from "./MenuIcon";
 import reactCSS from "reactcss";
 import { SketchPicker } from "react-color";
-import { ReactComponent as Logo } from "./icon1.svg";
 
 const URLImage = ({ image }) => {
   const [img] = useImage(image.src);
@@ -85,27 +84,6 @@ const DIYDesignEditor = () => {
     <Container className={DIYCSS.outer}>
       <Row>
         <Col>
-          <img
-            alt="block1"
-            src={block1}
-            draggable="true"
-            onDragStart={(e) => {
-              dragUrl.current = e.target.src;
-            }}
-          />{" "}
-        </Col>
-
-        <Col>
-          <Logo
-            fill={`rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`}
-            draggable="true"
-            onDragStart={(e) => {
-              console.log("Dragging");
-              dragUrl.current = e.target.src;
-            }}
-          />
-        </Col>
-        <Col>
           <div>
             <div style={styles.swatch} onClick={handleClick}>
               <div style={styles.color} />
@@ -117,6 +95,18 @@ const DIYDesignEditor = () => {
               </div>
             ) : null}
           </div>
+        </Col>
+
+        <Col>
+          <img
+            alt="block1"
+            className={DIYCSS.menu}
+            src={block1}
+            draggable="true"
+            onDragStart={(e) => {
+              dragUrl.current = e.target.src;
+            }}
+          />{" "}
         </Col>
         <Col>
           <Button variant="dark">Save Design</Button>
@@ -133,6 +123,9 @@ const DIYDesignEditor = () => {
 
       <Container
         className={DIYCSS.inner}
+        style={{
+          backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`,
+        }}
         onDrop={(e) => {
           e.preventDefault();
           // register event position

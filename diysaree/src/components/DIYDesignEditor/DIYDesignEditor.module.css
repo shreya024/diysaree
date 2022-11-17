@@ -13,3 +13,7 @@
   height: 75vh;
   align-self: center;
 }
+.menu {
+  background-image: url("./icon1.svg");
+  stroke: aqua;
+}
