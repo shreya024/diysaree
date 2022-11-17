@@ -6,7 +6,9 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import { Stage, Image, Layer } from "react-konva";
 import useImage from "use-image";
-import block1 from "./icon1.svg";
+import block1 from "./block1.png";
+import block2 from "./block2.png";
+import block3 from "./block3.png";
 import reactCSS from "reactcss";
 import { SketchPicker } from "react-color";
 import ExportAsImg from "./ExportAsImg";
@@ -85,24 +87,41 @@ const DIYDesignEditor = () => {
     <Container className={DIYCSS.outer}>
       <Row>
         <Col>
-          <div>
-            <div style={styles.swatch} onClick={handleClick}>
-              <div style={styles.color} />
-            </div>
-            {colorPickerstate ? (
-              <div style={styles.popover}>
-                <div style={styles.cover} onClick={handleClose} />
-                <SketchPicker color={color} onChange={handleChange} />
-              </div>
-            ) : null}
+          <div style={styles.swatch} onClick={handleClick}>
+            <div style={styles.color} />
           </div>
+          {colorPickerstate ? (
+            <div style={styles.popover}>
+              <div style={styles.cover} onClick={handleClose} />
+              <SketchPicker color={color} onChange={handleChange} />
+            </div>
+          ) : null}
         </Col>
 
         <Col>
           <img
             alt="block1"
-            className={DIYCSS.menu}
+            src={block2}
+            draggable="true"
+            onDragStart={(e) => {
+              dragUrl.current = e.target.src;
+            }}
+          />{" "}
+        </Col>
+        <Col>
+          <img
+            alt="block2"
             src={block1}
+            draggable="true"
+            onDragStart={(e) => {
+              dragUrl.current = e.target.src;
+            }}
+          />{" "}
+        </Col>
+        <Col>
+          <img
+            alt="block3"
+            src={block3}
             draggable="true"
             onDragStart={(e) => {
               dragUrl.current = e.target.src;
@@ -117,16 +136,15 @@ const DIYDesignEditor = () => {
             Save Design
           </Button>
         </Col>
-      </Row>
-      <Row>
+
         <Col>
-          <Button variant="dark">Add to Wishlist</Button>
+          <Button variant="dark">Wishlist</Button>
         </Col>
         <Col>
           <Button variant="dark">Order Now</Button>
         </Col>
       </Row>
-
+      <br></br>
       <Container
         ref={exportRef}
         className={DIYCSS.inner}
