@@ -148,13 +148,21 @@ const DIYDesignEditor = () => {
       </Row>
       <br></br>
 
-      <Row>
-        <Col>Aanchal</Col>
+      <Row ref={exportRef}>
+        <Col>
+          Aanchal
+          <Container
+            className={DIYCSS.inner}
+            style={{
+              backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`,
+            }}
+          ></Container>
+        </Col>
         <Col xs={6}>
           <Row>Paar of Saree</Row>
           <Row>
+            Body of Saree
             <Container
-              ref={exportRef}
               className={DIYCSS.inner}
               style={{
                 backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`,
