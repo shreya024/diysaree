@@ -12,6 +12,8 @@ import block3 from "./block3.png";
 import reactCSS from "reactcss";
 import { SketchPicker } from "react-color";
 import ExportAsImg from "./ExportAsImg";
+import ReactPlaceholder from "react-placeholder";
+import "react-placeholder/lib/reactPlaceholder.css";
 
 const URLImage = ({ image }) => {
   const [img] = useImage(image.src);
@@ -34,7 +36,7 @@ const DIYDesignEditor = () => {
   const [images, setImages] = useState([]);
 
   const [colorPickerstate, setColorPickerState] = useState(false);
-  const [color, setColor] = useState({ r: "241", g: "112", b: "19", a: "1" });
+  const [color, setColor] = useState({ r: "255", g: "255", b: "255", a: "1" });
 
   const handleClick = () => {
     setColorPickerState(!colorPickerstate);
@@ -84,7 +86,7 @@ const DIYDesignEditor = () => {
   });
 
   return (
-    <Container className={DIYCSS.outer}>
+    <div className={DIYCSS.outer}>
       <Row>
         <Col>
           <div style={styles.swatch} onClick={handleClick}>
@@ -145,41 +147,52 @@ const DIYDesignEditor = () => {
         </Col>
       </Row>
       <br></br>
-      <Container
-        ref={exportRef}
-        className={DIYCSS.inner}
-        style={{
-          backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`,
-        }}
-        onDrop={(e) => {
-          e.preventDefault();
-          // register event position
-          stageRef.current.setPointersPositions(e);
-          // add image
-          setImages(
-            images.concat([
-              {
-                ...stageRef.current.getPointerPosition(),
-                src: dragUrl.current,
-              },
-            ])
-          );
-        }}
-        onDragOver={(e) => e.preventDefault()}
-      >
-        <Stage
-          width={window.innerWidth}
-          height={window.innerHeight}
-          ref={stageRef}
-        >
-          <Layer>
-            {images.map((image) => {
-              return <URLImage image={image} />;
-            })}
-          </Layer>
-        </Stage>
-      </Container>
-    </Container>
+
+      <Row>
+        <Col>Aanchal</Col>
+        <Col xs={6}>
+          <Row>Paar of Saree</Row>
+          <Row>
+            <Container
+              ref={exportRef}
+              className={DIYCSS.inner}
+              style={{
+                backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`,
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                // register event position
+                stageRef.current.setPointersPositions(e);
+                // add image
+                setImages(
+                  images.concat([
+                    {
+                      ...stageRef.current.getPointerPosition(),
+                      src: dragUrl.current,
+                    },
+                  ])
+                );
+              }}
+              onDragOver={(e) => e.preventDefault()}
+            >
+              <Stage
+                width={window.innerWidth}
+                height={window.innerHeight}
+                ref={stageRef}
+              >
+                <Layer>
+                  {images.map((image) => {
+                    return <URLImage image={image} />;
+                  })}
+                </Layer>
+              </Stage>
+            </Container>
+          </Row>
+          <Row>Paar of Saree</Row>
+        </Col>
+        <Col>Blouse Piece</Col>
+      </Row>
+    </div>
   );
 };
 
