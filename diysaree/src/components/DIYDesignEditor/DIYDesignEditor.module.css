@@ -5,8 +5,13 @@
   padding: 3%;
 }
 .inner {
-  background-color: #ffffff;
   border-radius: 5%;
   height: 100vh;
   align-self: center;
+}
+
+.design {
+  border-radius: 5%;
+  background-image: url("./design.svg");
+  background-size: contain;
 }
