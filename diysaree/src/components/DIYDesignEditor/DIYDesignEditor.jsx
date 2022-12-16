@@ -9,12 +9,12 @@ import useImage from "use-image";
 import block1 from "./block1.png";
 import block2 from "./block2.png";
 import block3 from "./block3.png";
+import block4 from "./design4.png";
+import block5 from "./design5.png";
 import reactCSS from "reactcss";
 import { SketchPicker } from "react-color";
 import ExportAsImg from "./ExportAsImg";
-import ReactPlaceholder from "react-placeholder";
 import "react-placeholder/lib/reactPlaceholder.css";
-import MenuIcon from "./MenuIcon";
 
 const URLImage = ({ image }) => {
   const [img] = useImage(image.src);
@@ -132,6 +132,16 @@ const DIYDesignEditor = () => {
           />{" "}
         </Col>
         <Col>
+          <img
+            alt="block5"
+            src={block5}
+            draggable="true"
+            onDragStart={(e) => {
+              dragUrl.current = e.target.src;
+            }}
+          />
+        </Col>
+        <Col>
           <Button
             variant="dark"
             onClick={() => ExportAsImg(exportRef.current, "design")}
@@ -149,40 +159,54 @@ const DIYDesignEditor = () => {
       </Row>
       <br></br>
 
-      <Container
-        className={DIYCSS.design}
-        ref={exportRef}
-        style={{
-          backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`,
-        }}
-        onDrop={(e) => {
-          e.preventDefault();
-          // register event position
-          stageRef.current.setPointersPositions(e);
-          // add image
-          setImages(
-            images.concat([
-              {
-                ...stageRef.current.getPointerPosition(),
-                src: dragUrl.current,
-              },
-            ])
-          );
-        }}
-        onDragOver={(e) => e.preventDefault()}
-      >
-        <Stage
-          width={window.innerWidth}
-          height={window.innerHeight}
-          ref={stageRef}
-        >
-          <Layer>
-            {images.map((image) => {
-              return <URLImage image={image} />;
-            })}
-          </Layer>
-        </Stage>
-      </Container>
+      <Row>
+        <Col>
+          <img
+            alt="block4"
+            src={block4}
+            draggable="true"
+            onDragStart={(e) => {
+              dragUrl.current = e.target.src;
+            }}
+          />
+        </Col>
+        <Col>
+          <Container
+            className={DIYCSS.design}
+            ref={exportRef}
+            style={{
+              backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`,
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              // register event position
+              stageRef.current.setPointersPositions(e);
+              // add image
+              setImages(
+                images.concat([
+                  {
+                    ...stageRef.current.getPointerPosition(),
+                    src: dragUrl.current,
+                  },
+                ])
+              );
+            }}
+            onDragOver={(e) => e.preventDefault()}
+          >
+            <Stage
+              width={window.innerWidth}
+              height={window.innerHeight}
+              ref={stageRef}
+            >
+              <Layer>
+                {images.map((image) => {
+                  return <URLImage image={image} />;
+                })}
+              </Layer>
+            </Stage>
+          </Container>
+        </Col>
+      </Row>
     </div>
   );
 };
