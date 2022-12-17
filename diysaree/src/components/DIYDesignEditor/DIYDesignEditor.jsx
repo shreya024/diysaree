@@ -1,10 +1,10 @@
-import { useRef, useState, React } from "react";
+import { useRef, useState, useEffect, React, Fragment } from "react";
 import DIYCSS from "./DIYDesignEditor.module.css";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
-import { Stage, Image, Layer } from "react-konva";
+import { Stage, Image, Layer, Transformer, Circle } from "react-konva";
 import useImage from "use-image";
 import block1 from "./block1.png";
 import block2 from "./block2.png";
@@ -17,18 +17,91 @@ import ExportAsImg from "./ExportAsImg";
 import ReactImageZoom from "react-image-zoom";
 import uniqid from "uniqid";
 
-const URLImage = ({ image }) => {
+const URLImage = ({
+  image,
+  shapeProps,
+  unSelectShape,
+  isSelected,
+  onSelect,
+  onChange,
+  onDelete,
+}) => {
+  const shapeRef = useRef();
+  const trRef = useRef();
+  const deleteButton = useRef();
   const [img] = useImage(image.src);
+
+  useEffect(() => {
+    if (isSelected) {
+      // we need to attach transformer manually
+      trRef.current.nodes([shapeRef.current]);
+      trRef.current.getLayer().batchDraw();
+    }
+  }, [isSelected]);
+
+  const onMouseEnter = (event) => {
+    if (isSelected) {
+      event.target.getStage().container().style.cursor = "move";
+    }
+    if (!isSelected) {
+      event.target.getStage().container().style.cursor = "pointer";
+    }
+  };
+
+  const onMouseLeave = (event) => {
+    event.target.getStage().container().style.cursor = "default";
+  };
+
+  const handleDelete = () => {
+    unSelectShape(null);
+    onDelete(shapeRef.current);
+  };
+
   return (
-    <Image
-      image={img}
-      key={uniqid()}
-      x={image.x}
-      y={image.y}
-      // I will use offset to set origin to the center of the image
-      offsetX={img ? img.width / 2 : 0}
-      offsetY={img ? img.height / 2 : 0}
-    />
+    <Fragment>
+      <Image
+        image={img}
+        x={image.x}
+        y={image.y}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        // I will use offset to set origin to the center of the image
+        offsetX={img ? img.width / 2 : 0}
+        offsetY={img ? img.height / 2 : 0}
+        onClick={onSelect}
+        onTap={onSelect}
+        ref={shapeRef}
+        {...shapeProps}
+        draggable
+        onDragEnd={(e) => {
+          onChange({
+            ...shapeProps,
+            x: e.target.x(),
+            y: e.target.y(),
+          });
+        }}
+      />
+      {isSelected && (
+        <Transformer
+          ref={trRef}
+          boundBoxFunc={(oldBox, newBox) => {
+            // limit resize
+            if (newBox.width < 5 || newBox.height < 5) {
+              return oldBox;
+            }
+            return newBox;
+          }}
+        >
+          <Circle
+            radius={8}
+            fill="red"
+            ref={deleteButton}
+            onClick={handleDelete}
+            x={shapeRef.current.width()}
+          ></Circle>
+        </Transformer>
+      )}
+    </Fragment>
   );
 };
 
@@ -39,6 +112,31 @@ const DIYDesignEditor = () => {
   const exportRef = useRef();
   //list of images
   const [images, setImages] = useState([]);
+  const [selectedId, selectShape] = useState(null);
+
+  const handleRemove = (index) => {
+    const newList = images.filter((item) => item.index !== index);
+
+    setImages(newList);
+  };
+
+  const checkDeselect = (e) => {
+    // deselect when clicked on empty area
+    const clickedOnEmpty = e.target === e.target.getStage();
+    if (clickedOnEmpty) {
+      selectShape(null);
+    }
+  };
+
+  const unSelectShape = (prop) => {
+    selectShape(prop);
+  };
+
+  const onDeleteImage = (node) => {
+    const newImages = [...images];
+    newImages.splice(node.index, 1);
+    setImages(newImages);
+  };
 
   const [colorPickerstate, setColorPickerState] = useState(false);
   const [color, setColor] = useState({ r: "255", g: "255", b: "255", a: "1" });
@@ -200,11 +298,31 @@ const DIYDesignEditor = () => {
             <Stage
               width={window.innerWidth}
               height={window.innerHeight}
+              onMouseDown={checkDeselect}
+              onTouchStart={checkDeselect}
               ref={stageRef}
             >
               <Layer>
-                {images.map((image) => {
-                  return <URLImage image={image} />;
+                {images.map((image, index) => {
+                  return (
+                    <URLImage
+                      image={image}
+                      key={index}
+                      shapeProps={image}
+                      isSelected={image === selectedId}
+                      unSelectShape={unSelectShape}
+                      onClick={handleRemove}
+                      onSelect={() => {
+                        selectShape(image);
+                      }}
+                      onChange={(newAttrs) => {
+                        const rects = images.slice();
+                        rects[index] = newAttrs;
+                        setImages(rects);
+                      }}
+                      onDelete={onDeleteImage}
+                    />
+                  );
                 })}
               </Layer>
             </Stage>
