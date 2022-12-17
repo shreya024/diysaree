@@ -14,13 +14,15 @@ import block5 from "./design5.png";
 import reactCSS from "reactcss";
 import { SketchPicker } from "react-color";
 import ExportAsImg from "./ExportAsImg";
-import "react-placeholder/lib/reactPlaceholder.css";
+import ReactImageZoom from "react-image-zoom";
+import uniqid from "uniqid";
 
 const URLImage = ({ image }) => {
   const [img] = useImage(image.src);
   return (
     <Image
       image={img}
+      key={uniqid()}
       x={image.x}
       y={image.y}
       // I will use offset to set origin to the center of the image
@@ -31,9 +33,11 @@ const URLImage = ({ image }) => {
 };
 
 const DIYDesignEditor = () => {
+  const zoom = { width: 400, height: 250, zoomWidth: 500, img: { block3 } };
   const dragUrl = useRef();
   const stageRef = useRef();
   const exportRef = useRef();
+  //list of images
   const [images, setImages] = useState([]);
 
   const [colorPickerstate, setColorPickerState] = useState(false);
@@ -206,6 +210,9 @@ const DIYDesignEditor = () => {
             </Stage>
           </Container>
         </Col>
+        {/*<Col>
+          <ReactImageZoom {...zoom} />
+        </Col>*/}
       </Row>
     </div>
   );
