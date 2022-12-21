@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect, React, Fragment } from "react";
 import DIYCSS from "./DIYDesignEditor.module.css";
 import Container from "react-bootstrap/Container";
+import Dropdown from "react-bootstrap/Dropdown";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
@@ -233,16 +234,28 @@ const DIYDesignEditor = () => {
             }}
           />{" "}
         </Col>
-        <Col>
-          <img
-            alt="block5"
-            src={block5}
-            draggable="true"
-            onDragStart={(e) => {
-              dragUrl.current = e.target.src;
-            }}
-          />
-        </Col>
+
+        <Dropdown>
+          <Dropdown.Toggle variant="dark" id="dropdown-basic">
+            Select Paar/Aanchal Designs
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu>
+            <Dropdown.Item href="#/action-1">
+              <img
+                alt="block5"
+                src={block5}
+                draggable="true"
+                onDragStart={(e) => {
+                  dragUrl.current = e.target.src;
+                }}
+              />
+            </Dropdown.Item>
+            <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+            <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+
         <Col>
           <Button
             variant="dark"
@@ -261,77 +274,60 @@ const DIYDesignEditor = () => {
       </Row>
       <br></br>
 
-      <Row>
-        <Col>
-          <img
-            alt="block4"
-            src={block4}
-            draggable="true"
-            onDragStart={(e) => {
-              dragUrl.current = e.target.src;
-            }}
-          />
-        </Col>
-        <Col>
-          <Container
-            className={DIYCSS.design}
-            ref={exportRef}
-            style={{
-              backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`,
-            }}
-            onDrop={(e) => {
-              e.preventDefault();
-              // register event position
-              stageRef.current.setPointersPositions(e);
-              // add image
-              setImages(
-                images.concat([
-                  {
-                    ...stageRef.current.getPointerPosition(),
-                    src: dragUrl.current,
-                  },
-                ])
+      <Container
+        className={DIYCSS.design}
+        ref={exportRef}
+        style={{
+          backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`,
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          // register event position
+          stageRef.current.setPointersPositions(e);
+          // add image
+          setImages(
+            images.concat([
+              {
+                ...stageRef.current.getPointerPosition(),
+                src: dragUrl.current,
+              },
+            ])
+          );
+        }}
+        onDragOver={(e) => e.preventDefault()}
+      >
+        <Stage
+          width={window.innerWidth}
+          height={window.innerHeight}
+          onMouseDown={checkDeselect}
+          onTouchStart={checkDeselect}
+          ref={stageRef}
+        >
+          <Layer>
+            {images.map((image, index) => {
+              return (
+                <URLImage
+                  image={image}
+                  key={index}
+                  shapeProps={image}
+                  isSelected={image === selectedId}
+                  unSelectShape={unSelectShape}
+                  onClick={handleRemove}
+                  onSelect={() => {
+                    selectShape(image);
+                  }}
+                  onChange={(newAttrs) => {
+                    const rects = images.slice();
+                    rects[index] = newAttrs;
+                    setImages(rects);
+                  }}
+                  onDelete={onDeleteImage}
+                />
               );
-            }}
-            onDragOver={(e) => e.preventDefault()}
-          >
-            <Stage
-              width={window.innerWidth}
-              height={window.innerHeight}
-              onMouseDown={checkDeselect}
-              onTouchStart={checkDeselect}
-              ref={stageRef}
-            >
-              <Layer>
-                {images.map((image, index) => {
-                  return (
-                    <URLImage
-                      image={image}
-                      key={index}
-                      shapeProps={image}
-                      isSelected={image === selectedId}
-                      unSelectShape={unSelectShape}
-                      onClick={handleRemove}
-                      onSelect={() => {
-                        selectShape(image);
-                      }}
-                      onChange={(newAttrs) => {
-                        const rects = images.slice();
-                        rects[index] = newAttrs;
-                        setImages(rects);
-                      }}
-                      onDelete={onDeleteImage}
-                    />
-                  );
-                })}
-              </Layer>
-            </Stage>
-          </Container>
-        </Col>
-        {/*<Col>
-          <ReactImageZoom {...zoom} />
-        </Col>*/}
-      </Row>
+            })}
+          </Layer>
+        </Stage>
+      </Container>
     </div>
   );
 };
