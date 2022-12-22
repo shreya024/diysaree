@@ -5,12 +5,11 @@ import Dropdown from "react-bootstrap/Dropdown";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
-import { Stage, Image, Layer, Transformer, Circle } from "react-konva";
+import { Stage, Image, Layer, Transformer, Circle, Rect } from "react-konva";
 import useImage from "use-image";
 import block1 from "./block1.png";
 import block2 from "./block2.png";
 import block3 from "./block3.png";
-import block4 from "./design4.png";
 import block5 from "./design5.png";
 import reactCSS from "reactcss";
 import { SketchPicker } from "react-color";
@@ -18,45 +17,9 @@ import ExportAsImg from "./ExportAsImg";
 import ReactImageZoom from "react-image-zoom";
 import uniqid from "uniqid";
 
-const URLImage = ({
-  image,
-  shapeProps,
-  unSelectShape,
-  isSelected,
-  onSelect,
-  onChange,
-  onDelete,
-}) => {
+const URLImage = ({ image, shapeProps, onSelect, onChange }) => {
   const shapeRef = useRef();
-  const trRef = useRef();
-  const deleteButton = useRef();
   const [img] = useImage(image.src);
-
-  useEffect(() => {
-    if (isSelected) {
-      // we need to attach transformer manually
-      trRef.current.nodes([shapeRef.current]);
-      trRef.current.getLayer().batchDraw();
-    }
-  }, [isSelected]);
-
-  const onMouseEnter = (event) => {
-    if (isSelected) {
-      event.target.getStage().container().style.cursor = "move";
-    }
-    if (!isSelected) {
-      event.target.getStage().container().style.cursor = "pointer";
-    }
-  };
-
-  const onMouseLeave = (event) => {
-    event.target.getStage().container().style.cursor = "default";
-  };
-
-  const handleDelete = () => {
-    unSelectShape(null);
-    onDelete(shapeRef.current);
-  };
 
   return (
     <Fragment>
@@ -64,15 +27,16 @@ const URLImage = ({
         image={img}
         x={image.x}
         y={image.y}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
         // I will use offset to set origin to the center of the image
         offsetX={img ? img.width / 2 : 0}
         offsetY={img ? img.height / 2 : 0}
-        onClick={onSelect}
-        onTap={onSelect}
+        onClick={() => {
+          console.log(onSelect(shapeRef));
+        }}
+        onTap={() => onSelect(shapeRef)}
         ref={shapeRef}
         {...shapeProps}
+        name="rectangle"
         draggable
         onDragEnd={(e) => {
           onChange({
@@ -81,62 +45,192 @@ const URLImage = ({
             y: e.target.y(),
           });
         }}
+        onTransformEnd={(e) => {
+          // transformer is changing scale of the node
+          // and NOT its width or height
+          // but in the store we have only width and height
+          // to match the data better we will reset scale on transform end
+          const node = shapeRef.current;
+          const scaleX = node.scaleX();
+          const scaleY = node.scaleY();
+
+          // we will reset it back
+          node.scaleX(1);
+          node.scaleY(1);
+          onChange({
+            ...shapeProps,
+            x: node.x(),
+            y: node.y(),
+            // set minimal value
+            width: Math.max(5, node.width() * scaleX),
+            height: Math.max(node.height() * scaleY),
+          });
+        }}
       />
-      {isSelected && (
-        <Transformer
-          ref={trRef}
-          boundBoxFunc={(oldBox, newBox) => {
-            // limit resize
-            if (newBox.width < 5 || newBox.height < 5) {
-              return oldBox;
-            }
-            return newBox;
-          }}
-        >
-          <Circle
-            radius={8}
-            fill="red"
-            ref={deleteButton}
-            onClick={handleDelete}
-            x={shapeRef.current.width()}
-          ></Circle>
-        </Transformer>
-      )}
     </Fragment>
   );
 };
 
 const DIYDesignEditor = () => {
-  const zoom = { width: 400, height: 250, zoomWidth: 500, img: { block3 } };
+  //const zoom = { width: 400, height: 250, zoomWidth: 500, img: { block3 } };
   const dragUrl = useRef();
   const stageRef = useRef();
   const exportRef = useRef();
+  const trRef = useRef();
+  const deleteButton = useRef();
   //list of images
   const [images, setImages] = useState([]);
   const [selectedId, selectShape] = useState(null);
+  const [nodesArray, setNodes] = useState([]);
+  const layerRef = useRef();
+  const Konva = window.Konva;
 
-  const handleRemove = (index) => {
-    const newList = images.filter((item) => item.index !== index);
-
-    setImages(newList);
-  };
+  const selectionRef = useRef();
+  const selection = useRef({
+    visible: false,
+    x1: 0,
+    y1: 0,
+    x2: 0,
+    y2: 0,
+  });
 
   const checkDeselect = (e) => {
     // deselect when clicked on empty area
     const clickedOnEmpty = e.target === e.target.getStage();
     if (clickedOnEmpty) {
       selectShape(null);
+      trRef.current.nodes([]);
+      setNodes([]);
     }
+  };
+
+  const updateSelection = () => {
+    const node = selectionRef.current;
+    node.setAttrs({
+      visible: selection.current.visible,
+      x: Math.min(selection.current.x1, selection.current.x2),
+      y: Math.min(selection.current.y1, selection.current.y2),
+      width: Math.abs(selection.current.x1 - selection.current.x2),
+      height: Math.abs(selection.current.y1 - selection.current.y2),
+      fill: "rgba(0, 161, 255, 0.3)",
+    });
+    node.getLayer().batchDraw();
+  };
+
+  const oldPos = useRef(null);
+
+  const onMouseDown = (e) => {
+    const isElement = e.target.findAncestor(".elements-container");
+    const isTransformer = e.target.findAncestor("Transformer");
+    if (isElement || isTransformer) {
+      return;
+    }
+
+    const pos = e.target.getStage().getPointerPosition();
+    selection.current.visible = true;
+    selection.current.x1 = pos.x;
+    selection.current.y1 = pos.y;
+    selection.current.x2 = pos.x;
+    selection.current.y2 = pos.y;
+    updateSelection();
+  };
+
+  const onMouseMove = (e) => {
+    if (!selection.current.visible) {
+      return;
+    }
+    const pos = e.target.getStage().getPointerPosition();
+    selection.current.x2 = pos.x;
+    selection.current.y2 = pos.y;
+    updateSelection();
+  };
+
+  const onMouseUp = () => {
+    oldPos.current = null;
+    if (!selection.current.visible) {
+      return;
+    }
+    const selBox = selectionRef.current.getClientRect();
+
+    const elements = [];
+    layerRef.current.find(".rectangle").forEach((elementNode) => {
+      const elBox = elementNode.getClientRect();
+      if (Konva.Util.haveIntersection(selBox, elBox)) {
+        elements.push(elementNode);
+      }
+    });
+    trRef.current.nodes(elements);
+    selection.current.visible = false;
+    // disable click event
+    Konva.listenClickTap = false;
+    updateSelection();
+  };
+
+  const onClickTap = (e) => {
+    // if we are selecting with rect, do nothing
+    if (selectionRef.current.visible()) {
+      return;
+    }
+    let stage = e.target.getStage();
+    let layer = layerRef.current;
+    let tr = trRef.current;
+    // if click on empty area - remove all selections
+    if (e.target === stage) {
+      selectShape(null);
+      setNodes([]);
+      tr.nodes([]);
+      layer.draw();
+      return;
+    }
+
+    // do nothing if clicked NOT on our rectangles
+    if (!e.target.hasName(".rect")) {
+      return;
+    }
+
+    // do we pressed shift or ctrl?
+    const metaPressed = e.evt.shiftKey || e.evt.ctrlKey || e.evt.metaKey;
+    const isSelected = tr.nodes().indexOf(e.target) >= 0;
+
+    if (!metaPressed && !isSelected) {
+      // if no key pressed and the node is not selected
+      // select just one
+      tr.nodes([e.target]);
+    } else if (metaPressed && isSelected) {
+      // if we pressed keys and node was selected
+      // we need to remove it from selection:
+      const nodes = tr.nodes().slice(); // use slice to have new copy of array
+      // remove node from array
+      nodes.splice(nodes.indexOf(e.target), 1);
+      tr.nodes(nodes);
+    } else if (metaPressed && !isSelected) {
+      // add the node into selection
+      const nodes = tr.nodes().concat([e.target]);
+      tr.nodes(nodes);
+    }
+    layer.draw();
   };
 
   const unSelectShape = (prop) => {
     selectShape(prop);
   };
 
-  const onDeleteImage = (node) => {
+  const onDeleteImage = (index) => {
     const newImages = [...images];
-    newImages.splice(node.index, 1);
+    console.log(newImages);
+    newImages.splice(index, 1);
     setImages(newImages);
+
+    //const newList = images.filter((item) => item.id !== index);
+
+    //setImages(newList);
+  };
+
+  const handleDelete = (e) => {
+    unSelectShape(null);
+    console.log(e);
+    //console.log(selectedId);
+    onDeleteImage(2);
   };
 
   const [colorPickerstate, setColorPickerState] = useState(false);
@@ -299,32 +393,56 @@ const DIYDesignEditor = () => {
         <Stage
           width={window.innerWidth}
           height={window.innerHeight}
-          onMouseDown={checkDeselect}
+          onMouseDown={onMouseDown}
+          onMouseUp={onMouseUp}
+          onMouseMove={onMouseMove}
           onTouchStart={checkDeselect}
+          onClick={onClickTap}
           ref={stageRef}
         >
-          <Layer>
+          <Layer ref={layerRef}>
             {images.map((image, index) => {
               return (
                 <URLImage
                   image={image}
                   key={index}
                   shapeProps={image}
-                  isSelected={image === selectedId}
+                  isSelected={false}
                   unSelectShape={unSelectShape}
-                  onClick={handleRemove}
-                  onSelect={() => {
-                    selectShape(image);
+                  getLength={images.length}
+                  onClick={onClickTap}
+                  onSelect={(e) => {
+                    selectShape(image.id);
                   }}
                   onChange={(newAttrs) => {
-                    const rects = images.slice();
-                    rects[index] = newAttrs;
-                    setImages(rects);
+                    const image = images.slice();
+                    image[index] = newAttrs;
+                    setImages(image);
                   }}
                   onDelete={onDeleteImage}
                 />
               );
             })}
+            <Transformer
+              // ref={trRef.current[getKey]}
+              ref={trRef}
+              boundBoxFunc={(oldBox, newBox) => {
+                // limit resize
+                if (newBox.width < 5 || newBox.height < 5) {
+                  return oldBox;
+                }
+                return newBox;
+              }}
+            >
+              <Circle
+                radius={8}
+                fill="red"
+                ref={deleteButton}
+                onClick={handleDelete}
+              ></Circle>
+            </Transformer>
+
+            <Rect fill="rgba(0,0,255,0.5)" ref={selectionRef} />
           </Layer>
         </Stage>
       </Container>
