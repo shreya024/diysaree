@@ -228,9 +228,10 @@ const DIYDesignEditor = () => {
 
   const handleDelete = (e) => {
     unSelectShape(null);
-    console.log(e);
-    //console.log(selectedId);
-    onDeleteImage(2);
+
+    if (images.length !== 0) {
+      onDeleteImage(images.length - 1);
+    }
   };
 
   const [colorPickerstate, setColorPickerState] = useState(false);
@@ -351,6 +352,12 @@ const DIYDesignEditor = () => {
         </Dropdown>
 
         <Col>
+          <Button variant="dark" ref={deleteButton} onClick={handleDelete}>
+            Undo
+          </Button>
+        </Col>
+
+        <Col>
           <Button
             variant="dark"
             onClick={() => ExportAsImg(exportRef.current, "design")}
@@ -433,14 +440,7 @@ const DIYDesignEditor = () => {
                 }
                 return newBox;
               }}
-            >
-              <Circle
-                radius={8}
-                fill="red"
-                ref={deleteButton}
-                onClick={handleDelete}
-              ></Circle>
-            </Transformer>
+            ></Transformer>
 
             <Rect fill="rgba(0,0,255,0.5)" ref={selectionRef} />
           </Layer>
